@@ -3,6 +3,7 @@ package com.example.quranappteacher;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,31 +16,24 @@ public class Control extends AppCompatActivity {
         setContentView(R.layout.activity_controler);
         CardView students_cardView = findViewById(R.id.students_cardView);
         CardView missions_cardView = findViewById(R.id.stud_missions_cardView);
-        CardView stud_rev_carsView = findViewById(R.id.stud_rev_carsView);
+        CardView review_cardView = findViewById(R.id.student_review_cardView);
+        TextView UserName = findViewById(R.id.text_user_name);
+        String admin = SharedPrefManager.getInstance(this).getAdmin().getName();
+        UserName.setText("مرحبا بك ! " + admin);
 
-
-        students_cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), Students.class);
-                startActivity(i);
-            }
+        students_cardView.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), StudentsActivity.class);
+            startActivity(i);
         });
 
-        missions_cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), Missions.class);
-                startActivity(i);
-            }
+        missions_cardView.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), Missions.class);
+            startActivity(i);
         });
 
-        stud_rev_carsView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), Review.class);
-                startActivity(i);
-            }
+        review_cardView.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), Review.class);
+            startActivity(i);
         });
     }
 }

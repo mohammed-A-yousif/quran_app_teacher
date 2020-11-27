@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.quranappteacher"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -19,6 +19,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -36,7 +40,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     // glide image library
     implementation 'com.github.bumptech.glide:glide:4.10.0'
-
+    implementation 'com.airbnb.android:lottie:3.0.7'
     implementation 'com.android.volley:volley:1.1.1'
     implementation 'com.google.code.gson:gson:2.8.6'
 

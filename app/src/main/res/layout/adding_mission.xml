@@ -87,7 +87,7 @@
                 android:layout_width="308dp"
                 android:layout_height="53dp"
                 android:layout_gravity="center"
-                android:background="@drawable/rounded_button"
+                android:background="@drawable/round_corner"
                 android:clickable="true"
                 android:focusable="true"
                 android:text="اضافة مهمة"
