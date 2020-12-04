@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 
 public class SharedPrefManager {
 
-    private static final String SHARED_PREF_NAME = "Admin";
+    private static final String SHARED_PREF_NAME = "Teacher";
     private static final String KEY_NAME = "keyname";
     private static final String KEY_PHONENUMBER = "keyphone";
     private static final String KEY_ID = "keyid";

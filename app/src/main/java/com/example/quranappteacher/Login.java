@@ -1,4 +1,5 @@
 package com.example.quranappteacher;
+
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -25,7 +26,7 @@ public class Login extends AppCompatActivity {
     String PhoneNumber;
     String Password;
 
-    ViewDialog viewDialog;
+//    ViewDialog viewDialog;
     EditText phoneEditText;
     EditText passEditText;
 
@@ -34,11 +35,11 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-//        if (SharedPrefManager.getInstance(this).isLoggedIn()) {
-//            finish();
-//            startActivity(new Intent(this, Control.class));
-//            return;
-//        }
+        if (SharedPrefManager.getInstance(this).isLoggedIn()) {
+            finish();
+            startActivity(new Intent(this, Control.class));
+            return;
+        }
 
 //        viewDialog = new ViewDialog(this);
 
@@ -61,13 +62,16 @@ public class Login extends AppCompatActivity {
         if (!validate()) {
             return;
         }
-        viewDialog.showDialog();
+//        viewDialog.showDialog();
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, URLs.GetTeachers + "?PhoneNumber=" + phoneNumber + "&Password=" + password, null,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
+                URLs.GetTeachers + "?PhoneNumber=" + phoneNumber + "&Password=" + password, null,
                 (JSONObject response) -> {
                     try {
-                        String name = response.getString("Name");
-                        Admin admin = new Admin(response.getInt("IdAdmin"), response.getInt("UserType"), response.getString("Name"), response.getString("PhoneNumber"));
+//                        String name = response.getString("Name");
+                        Admin admin = new Admin(response.getInt("IdTeacher"),
+                                response.getInt("UserType"), response.getString("Name"),
+                                response.getString("PhoneNumber"));
                         SharedPrefManager.getInstance(getApplicationContext()).adminLogin(admin);
                         onSiginSuccess();
 
@@ -86,7 +90,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void onSiginFailed() {
-        viewDialog.hideDialog();
+//        viewDialog.hideDialog();
         Snackbar.make(findViewById(android.R.id.content), "Sign in Failed", Snackbar.LENGTH_LONG)
                 .setAction("Try Again", v -> {
                     Sigin(PhoneNumber, Password);
@@ -94,7 +98,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void onSiginSuccess() {
-        viewDialog.hideDialog();
+//        viewDialog.hideDialog();
         Snackbar.make(findViewById(android.R.id.content), "Sign in Successfully", Snackbar.LENGTH_LONG)
                 .show();
         startActivity(new Intent(this, Control.class));
