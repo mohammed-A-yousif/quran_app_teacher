@@ -65,7 +65,7 @@ public class Login extends AppCompatActivity {
 //        viewDialog.showDialog();
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
-                URLs.GetTeachers + "?PhoneNumber=" + phoneNumber + "&Password=" + password, null,
+                URLs.Login + "?PhoneNumber=" + phoneNumber + "&Password=" + password, null,
                 (JSONObject response) -> {
                     try {
 //                        String name = response.getString("Name");
@@ -73,6 +73,7 @@ public class Login extends AppCompatActivity {
                                 response.getInt("UserType"), response.getString("Name"),
                                 response.getString("PhoneNumber"));
                         SharedPrefManager.getInstance(getApplicationContext()).adminLogin(admin);
+                        Log.d("res", response.toString());
                         onSiginSuccess();
 
                     } catch (JSONException e) {
