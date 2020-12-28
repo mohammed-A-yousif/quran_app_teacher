@@ -18,20 +18,30 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Missions extends AppCompatActivity implements MissionsAdapter.MissionsAdapterListener {
     private MissionsAdapter adapter;
+    int TeacherId;
+    private JSONArray jsonArray;
+    List<Task> listItems ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,15 +49,16 @@ public class Missions extends AppCompatActivity implements MissionsAdapter.Missi
         setContentView(R.layout.missions_activity);
         Toolbar toolbar = findViewById(R.id.missions_toolbar);
         setSupportActionBar(toolbar);
+
         RecyclerView recyclerView = findViewById(R.id.missions_recyclerView);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        List<Contact> listItems = new ArrayList<>();
 
-        for (int i = 0; i <10; i++) {
-            Contact listItem = new Contact("Mohammed Ahmed" + (i + 1), "0909041441", "9/26/2020");
-            listItems.add(listItem);
-        }
+        TeacherId = SharedPrefManager.getInstance(this).getAdmin().getId();
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        listItems = new ArrayList<>();
+
+
         adapter = new MissionsAdapter(listItems, this);
         recyclerView.setAdapter(adapter);
 
@@ -55,14 +66,52 @@ public class Missions extends AppCompatActivity implements MissionsAdapter.Missi
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(R.string.toolbar_title);
 
+        getTasks();
+
         FloatingActionButton teachFAB = findViewById(R.id.add_mission_fab);
-        teachFAB.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), AddingMission.class);
-                startActivity(i);
-            }
+        teachFAB.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), AddingMission.class);
+            startActivity(i);
         });
+    }
+
+    private void getTasks() {
+
+        //        viewDialog.showDialog();
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.GetTask + TeacherId , response -> {
+            try {
+                jsonArray = new JSONArray(response);
+                for (int i = 0; i < jsonArray.length(); i ++){
+                    JSONObject TaskObject = jsonArray.getJSONObject(i);
+                    int Id = TaskObject.getInt("IdTask");
+                    String TaskName = TaskObject.getString("TaskName");
+                    String TaskDec = TaskObject.getString("TaskDec");
+                    String CreatedAt = TaskObject.getString("CreatedAt");
+                    Task listItem = new Task(Id,TaskName, TaskDec, CreatedAt);
+                    listItems.add(listItem);
+                }
+
+                adapter.notifyDataSetChanged();
+//                viewDialog.hideDialog();
+                Log.d("res", jsonArray.toString());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+//                viewDialog.hideDialog();
+                Snackbar.make(findViewById(android.R.id.content), "Couldn't get Students " + e , Snackbar.LENGTH_LONG)
+                        .setAction("Retry", v -> getTasks()).show();
+            }
+
+        }, error -> {
+            error.printStackTrace();
+//            viewDialog.hideDialog();
+            Snackbar.make(findViewById(android.R.id.content), "Couldn't get Students " + error , Snackbar.LENGTH_LONG)
+                    .setAction("Retry", v -> getTasks()).show();
+        });
+
+        requestQueue.add(stringRequest);
+
     }
 
     @Override

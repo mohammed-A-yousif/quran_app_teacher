@@ -37,6 +37,7 @@ public class StudentsActivity extends AppCompatActivity implements StudentAdapte
 
     List<Student> listItems ;
     ViewDialog viewDialog;
+    int TeacherId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +54,13 @@ public class StudentsActivity extends AppCompatActivity implements StudentAdapte
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         listItems = new ArrayList<>();
 
-        FloatingActionButton studentsFAB = findViewById(R.id.students_fab);
-        studentsFAB.setOnClickListener(v -> {
-            Intent i = new Intent(getApplicationContext(), AddingStudent.class);
-            startActivity(i);
-        });
+        TeacherId = SharedPrefManager.getInstance(this).getAdmin().getId();
+
+//        FloatingActionButton studentsFAB = findViewById(R.id.students_fab);
+//        studentsFAB.setOnClickListener(v -> {
+//            Intent i = new Intent(getApplicationContext(), AddingStudent.class);
+//            startActivity(i);
+//        });
 
 
         adapter = new StudentAdapter(listItems, this);
@@ -72,35 +75,36 @@ public class StudentsActivity extends AppCompatActivity implements StudentAdapte
 
 
     public void getStudents(){
-        viewDialog.showDialog();
+//        viewDialog.showDialog();
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.GetStudents, response -> {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.GetStudents + TeacherId , response -> {
             try {
                 jsonArray = new JSONArray(response);
                 for (int i = 0; i < jsonArray.length(); i ++){
                     JSONObject StudentObject = jsonArray.getJSONObject(i);
+                    int Id = StudentObject.getInt("IdStudent");
                     String Name = StudentObject.getString("Name");
                     String PhoneNumber = StudentObject.getString("PhoneNumber");
                     String Date = StudentObject.getString("CreatedAt");
-                    Student listItem = new Student(Name, PhoneNumber, Date);
+                    Student listItem = new Student(Id,Name, PhoneNumber, Date);
                     listItems.add(listItem);
                 }
 
                 adapter.notifyDataSetChanged();
-                viewDialog.hideDialog();
+//                viewDialog.hideDialog();
                 Log.d("res", jsonArray.toString());
 
             } catch (JSONException e) {
                 e.printStackTrace();
                 viewDialog.hideDialog();
-                Snackbar.make(findViewById(android.R.id.content), "Couldn't get Teacher " + e , Snackbar.LENGTH_LONG)
+                Snackbar.make(findViewById(android.R.id.content), "Couldn't get Students " + e , Snackbar.LENGTH_LONG)
                         .setAction("Retry", v -> getStudents()).show();
             }
 
         }, error -> {
             error.printStackTrace();
-            viewDialog.hideDialog();
-            Snackbar.make(findViewById(android.R.id.content), "Couldn't get Teacher " + error , Snackbar.LENGTH_LONG)
+//            viewDialog.hideDialog();
+            Snackbar.make(findViewById(android.R.id.content), "Couldn't get Students " + error , Snackbar.LENGTH_LONG)
                     .setAction("Retry", v -> getStudents()).show();
         });
 

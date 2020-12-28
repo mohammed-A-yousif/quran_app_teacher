@@ -73,7 +73,7 @@ public class AddingStudent extends AppCompatActivity implements AdapterView.OnIt
         listItems = new ArrayList<>();
 
         TeacherArray = new ArrayList<>();
-        GetTeacher();
+//        GetTeacher();
 
         addStudentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -103,7 +103,7 @@ public class AddingStudent extends AppCompatActivity implements AdapterView.OnIt
     public void GetTeacher(){
         viewDialog.showDialog();
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.GetTeachers, response -> {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.GetStudents, response -> {
             try {
                 jsonArray = new JSONArray(response);
                 for (int i = 0; i < jsonArray.length(); i ++){

@@ -7,10 +7,10 @@ public class URLs {
 //    public  static String BaseUrl = "https://aletgan-api-dev.herokuapp.com/";
 
     public static String Login = BaseUrl + "teacher_login/";
-    public static String AddTeacher = BaseUrl + "teacher_register/";
 
-    public static String GetTeachers = BaseUrl + "teachers/";
     public static String GetStudents = BaseUrl + "students/";
+    public static String AddTask = BaseUrl + "add_task/";
+    public static String GetTask = BaseUrl + "tasks_teacher/";
 
     public static String AddStudent = BaseUrl + "student_register/";
 

@@ -1,12 +1,14 @@
 package com.example.quranappteacher;
 
 public class Student {
+    int Id;
     String name;
     String phone;
     String date;
 
 
-    public Student(String name, String phone, String date) {
+    public Student(int Id, String name, String phone, String date) {
+        this.Id = Id;
         this.name = name;
         this.phone = phone;
         this.date = date;
@@ -15,6 +17,14 @@ public class Student {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setId(int id) {
+        Id = id;
+    }
+
+    public int getId() {
+        return Id;
     }
 
     public void setPhone(String phone) {

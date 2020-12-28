@@ -52,8 +52,8 @@ public class Login extends AppCompatActivity {
             PhoneNumber = phoneEditText.getText().toString();
             Password = passEditText.getText().toString();
 
-            startActivity(new Intent(this, Control.class));
-//            Sigin(PhoneNumber, Password);
+//            startActivity(new Intent(this, Control.class));
+            Sigin(PhoneNumber, Password);
 
         });
     }
