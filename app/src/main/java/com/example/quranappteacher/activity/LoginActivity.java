@@ -1,4 +1,4 @@
-package com.example.quranappteacher;
+package com.example.quranappteacher.activity;
 
 import android.util.Log;
 import android.util.Patterns;
@@ -14,19 +14,28 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.quranappteacher.Admin;
+import com.example.quranappteacher.Control;
+import com.example.quranappteacher.R;
+import com.example.quranappteacher.SharedPrefManager;
+import com.example.quranappteacher.URLs;
+import com.example.quranappteacher.ViewDialog;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static com.example.quranappteacher.URLs.BaseUrl;
 
-public class Login extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     String PhoneNumber;
     String Password;
 
-//    ViewDialog viewDialog;
+    ViewDialog viewDialog;
     EditText phoneEditText;
     EditText passEditText;
 
@@ -41,18 +50,17 @@ public class Login extends AppCompatActivity {
             return;
         }
 
-//        viewDialog = new ViewDialog(this);
+        viewDialog = new ViewDialog(this);
 
-        phoneEditText = (EditText) findViewById(R.id.input_phone);
-        passEditText = (EditText) findViewById(R.id.input_password);
+        phoneEditText = (EditText) findViewById(R.id.input_text_phonenumber);
+        passEditText = (EditText) findViewById(R.id.input_text_password);
 
-        Button loginButton = (Button) findViewById(R.id.btn_signin);
+        Button loginButton = (Button) findViewById(R.id.btn_login);
 
         loginButton.setOnClickListener(v -> {
             PhoneNumber = phoneEditText.getText().toString();
             Password = passEditText.getText().toString();
 
-//            startActivity(new Intent(this, Control.class));
             Sigin(PhoneNumber, Password);
 
         });
@@ -62,13 +70,13 @@ public class Login extends AppCompatActivity {
         if (!validate()) {
             return;
         }
-//        viewDialog.showDialog();
+        viewDialog.showDialog();
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 URLs.Login + "?PhoneNumber=" + phoneNumber + "&Password=" + password, null,
                 (JSONObject response) -> {
                     try {
-//                        String name = response.getString("Name");
+                        Log.d("res", response.toString());
                         Admin admin = new Admin(response.getInt("IdTeacher"),
                                 response.getInt("UserType"), response.getString("Name"),
                                 response.getString("PhoneNumber"));
@@ -81,8 +89,7 @@ public class Login extends AppCompatActivity {
                         onSiginFailed();
                     }
 
-                    Log.d("String Response : ", "" + response.toString());
-                    Log.d("name", String.valueOf(SharedPrefManager.getInstance(this).isLoggedIn()));
+
                 }, error -> Log.d("Error getting response", "" + error));
 
         requestQueue.add(jsonObjectRequest);
@@ -91,16 +98,16 @@ public class Login extends AppCompatActivity {
     }
 
     private void onSiginFailed() {
-//        viewDialog.hideDialog();
-        Snackbar.make(findViewById(android.R.id.content), "Sign in Failed", Snackbar.LENGTH_LONG)
-                .setAction("Try Again", v -> {
+        viewDialog.hideDialog();
+        Snackbar.make(findViewById(android.R.id.content), "فشل تسجيل الدخول", Snackbar.LENGTH_LONG)
+                .setAction("محاولة مرة اخري", v -> {
                     Sigin(PhoneNumber, Password);
                 }).show();
     }
 
     private void onSiginSuccess() {
-//        viewDialog.hideDialog();
-        Snackbar.make(findViewById(android.R.id.content), "Sign in Successfully", Snackbar.LENGTH_LONG)
+        viewDialog.hideDialog();
+        Snackbar.make(findViewById(android.R.id.content), "تم تسجيل الدخول بنجاح", Snackbar.LENGTH_LONG)
                 .show();
         startActivity(new Intent(this, Control.class));
         finish();
@@ -110,19 +117,31 @@ public class Login extends AppCompatActivity {
         boolean valid = true;
 
         if (PhoneNumber == null && !Patterns.PHONE.matcher(PhoneNumber).matches()) {
-            phoneEditText.setError("Enter a valid phone number");
+            phoneEditText.setError("الرجاء ادخال رقم هاتف صالح");
             valid = false;
         } else {
             phoneEditText.setError(null);
         }
 
-        if (Password == null && Password.length() < 2 && Password.length() > 4) {
-            passEditText.setError("Between 4 and 10 alphanumeric characters");
+        if (Password.length()  == 0  && Password.length() < 4  &&!isValidPassword(Password)){
+            passEditText.setError("كلمة السر يجب ان تحتوي علي اربعة حروف علي الاقل");
             valid = false;
         } else {
             passEditText.setError(null);
         }
         return valid;
+    }
+
+    public static boolean isValidPassword(final String password) {
+
+        Pattern pattern;
+        Matcher matcher;
+        final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{4,}$";
+        pattern = Pattern.compile(PASSWORD_PATTERN);
+        matcher = pattern.matcher(password);
+
+        return matcher.matches();
+
     }
 
 }

@@ -20,6 +20,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.quranappteacher.activity.TaskActivity;
+import com.example.quranappteacher.model.Student;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
@@ -29,26 +31,32 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddingMission extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class AddingTask extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private ArrayList<String> StudentArray;
     private JSONArray jsonArray;
     int TeacherId;
     int StudentId;
+
     List<Student> listItems ;
     Spinner addMissionStudentSpinner;
     String taskName, taskDec;
+
     EditText taskNameText, taskDecText;
+    ViewDialog viewDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.adding_mission);
+        setContentView(R.layout.adding_task);
 
         Button addMissionButton = findViewById(R.id.add_mission_button);
         addMissionStudentSpinner = findViewById(R.id.add_mission_student_spinner);
 
         taskNameText = findViewById(R.id.adding_mission_name_editText);
         taskDecText = findViewById(R.id.mission_editText_dec);
+
+
+        viewDialog = new ViewDialog(this);
 
         listItems = new ArrayList<>();
         addMissionStudentSpinner.setOnItemSelectedListener(this);
@@ -70,18 +78,19 @@ public class AddingMission extends AppCompatActivity implements AdapterView.OnIt
 
         TeacherId = SharedPrefManager.getInstance(this).getAdmin().getId();
         StudentArray = new ArrayList<>();
+
         GetStudent();
 
         addMissionButton.setOnClickListener(v -> {
             taskName = taskNameText.getText().toString();
             taskDec = taskDecText.getText().toString();
             addTask(taskName, taskDec);
-//            Intent i = new Intent(getApplicationContext(), Missions.class);
-//            startActivity(i);
+
         });
     }
 
     private void addTask(String taskName, String taskDec) {
+        viewDialog.showDialog();
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,  URLs.AddTask + "?IdTeacher=" + TeacherId + "&IdStudent=" + StudentId  + "&TaskName=" + taskName  + "&TaskDec=" + taskDec + "&TaskStatus=" + 0 + "&Enabled=" + 1, null,
                 (JSONObject response) -> {
@@ -97,7 +106,6 @@ public class AddingMission extends AppCompatActivity implements AdapterView.OnIt
                     }
 
                     Log.d("String Response : ", ""+  response.toString());
-                    Log.d("name", String.valueOf(SharedPrefManager.getInstance(this).isLoggedIn()));
                 }, error -> Log.d("Error getting response", "" +error));
 
         requestQueue.add(jsonObjectRequest);
@@ -107,7 +115,7 @@ public class AddingMission extends AppCompatActivity implements AdapterView.OnIt
 
 
     public void GetStudent(){
-//        viewDialog.showDialog();
+        viewDialog.showDialog();
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.GetStudents + TeacherId, response -> {
             try {
@@ -123,22 +131,21 @@ public class AddingMission extends AppCompatActivity implements AdapterView.OnIt
                     StudentArray.add(listItem.getName());
                 }
                 addMissionStudentSpinner.setAdapter(new ArrayAdapter<>(this, R.layout.spinner_item, StudentArray));
-//                adapter.notifyDataSetChanged();
-//                viewDialog.hideDialog();
+                viewDialog.hideDialog();
                 Log.d("res", jsonArray.toString());
 
             } catch (JSONException e) {
                 e.printStackTrace();
-//                viewDialog.hideDialog();
+                viewDialog.hideDialog();
                 Snackbar.make(findViewById(android.R.id.content), "Couldn't get Teacher " + e , Snackbar.LENGTH_LONG)
-                        .setAction("Retry", v -> GetStudent()).show();
+                        .setAction(" محاولة مرة اخري", v -> GetStudent()).show();
             }
 
         }, error -> {
             error.printStackTrace();
-//            viewDialog.hideDialog();
+            viewDialog.hideDialog();
             Snackbar.make(findViewById(android.R.id.content), "Couldn't get Teacher " + error , Snackbar.LENGTH_LONG)
-                    .setAction("Retry", v -> GetStudent()).show();
+                    .setAction(" محاولة مرة اخري", v -> GetStudent()).show();
         });
 
         requestQueue.add(stringRequest);
@@ -146,18 +153,18 @@ public class AddingMission extends AppCompatActivity implements AdapterView.OnIt
     }
 
     private void onInsertFailed() {
-//        viewDialog.hideDialog();
+        viewDialog.hideDialog();
         Snackbar.make(findViewById(android.R.id.content), "Sign in Failed", Snackbar.LENGTH_LONG)
-                .setAction("Try Again", v -> {
+                .setAction(" محاولة مرة اخري", v -> {
                     addTask(taskNameText.getText().toString() , taskDecText.getText().toString());
                 }).show();
     }
 
     private void onInsertSuccess() {
-//        viewDialog.hideDialog();
+        viewDialog.hideDialog();
         Snackbar.make(findViewById(android.R.id.content), "Sign in Successfully", Snackbar.LENGTH_LONG)
                 .show();
-        startActivity(new Intent(this, Missions.class));
+        startActivity(new Intent(this, TaskActivity.class));
         finish();
     }
 

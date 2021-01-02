@@ -5,6 +5,9 @@
         <item name="colorPrimary">#557571</item>
         <item name="colorPrimaryDark">#557571</item>
         <item name="colorAccent">#557571</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="colorControlActivated">@android:color/white</item>
+        <item name="colorControlHighlight">@android:color/white</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

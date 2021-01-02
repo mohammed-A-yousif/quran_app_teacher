@@ -1,4 +1,4 @@
-package com.example.quranappteacher;
+package com.example.quranappteacher.model;
 
 public class Student {
     int Id;

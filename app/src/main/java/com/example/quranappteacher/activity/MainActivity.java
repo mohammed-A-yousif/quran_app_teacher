@@ -1,7 +1,8 @@
-package com.example.quranappteacher;
+package com.example.quranappteacher.activity;
 
 import android.os.Bundle;
 
+import com.example.quranappteacher.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 

@@ -1,4 +1,10 @@
-package com.example.quranappteacher;
+package com.example.quranappteacher.activity;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.SearchManager;
 import android.content.Context;
@@ -9,17 +15,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.quranappteacher.AddingTask;
+import com.example.quranappteacher.Contact;
+import com.example.quranappteacher.adapter.TaskAdapter;
+import com.example.quranappteacher.R;
+import com.example.quranappteacher.SharedPrefManager;
+import com.example.quranappteacher.URLs;
+import com.example.quranappteacher.ViewDialog;
+import com.example.quranappteacher.model.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -30,82 +37,84 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StudentsActivity extends AppCompatActivity implements StudentAdapter.StudentAdapterListener {
-
-    private StudentAdapter adapter;
-    private JSONArray jsonArray;
-
-    List<Student> listItems ;
-    ViewDialog viewDialog;
+public class TaskActivity extends AppCompatActivity implements TaskAdapter.MissionsAdapterListener {
+    private TaskAdapter adapter;
     int TeacherId;
+    private JSONArray jsonArray;
+    List<Task> listItems ;
+    ViewDialog viewDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.students_activity);
+        setContentView(R.layout.task_activity);
 
-        Toolbar toolbar = findViewById(R.id.students_toolbar);
+        Toolbar toolbar = findViewById(R.id.task_toolbar);
         setSupportActionBar(toolbar);
-        viewDialog = new ViewDialog(this);
 
-        RecyclerView recyclerView = findViewById(R.id.students_recyclerView);
+        RecyclerView recyclerView = findViewById(R.id.task_recyclerView);
         recyclerView.setHasFixedSize(true);
+
+        viewDialog = new ViewDialog(this);
+        TeacherId = SharedPrefManager.getInstance(this).getAdmin().getId();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         listItems = new ArrayList<>();
 
-        TeacherId = SharedPrefManager.getInstance(this).getAdmin().getId();
 
-//        FloatingActionButton studentsFAB = findViewById(R.id.students_fab);
-//        studentsFAB.setOnClickListener(v -> {
-//            Intent i = new Intent(getApplicationContext(), AddingStudent.class);
-//            startActivity(i);
-//        });
-
-
-        adapter = new StudentAdapter(listItems, this);
+        adapter = new TaskAdapter(listItems, this);
         recyclerView.setAdapter(adapter);
 
-        // toolbar fancy stuff
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(R.string.toolbar_title);
 
-        getStudents();
+
+        toolbar.setNavigationOnClickListener(v -> {
+            finish();
+        });
+
+
+        getTasks();
+
+        FloatingActionButton teachFAB = findViewById(R.id.add_mission_fab);
+        teachFAB.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), AddingTask.class);
+            startActivity(i);
+        });
     }
 
-
-    public void getStudents(){
-//        viewDialog.showDialog();
+    private void getTasks() {
+        viewDialog.showDialog();
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.GetStudents + TeacherId , response -> {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.GetTask + TeacherId , response -> {
             try {
                 jsonArray = new JSONArray(response);
                 for (int i = 0; i < jsonArray.length(); i ++){
-                    JSONObject StudentObject = jsonArray.getJSONObject(i);
-                    int Id = StudentObject.getInt("IdStudent");
-                    String Name = StudentObject.getString("Name");
-                    String PhoneNumber = StudentObject.getString("PhoneNumber");
-                    String Date = StudentObject.getString("CreatedAt");
-                    Student listItem = new Student(Id,Name, PhoneNumber, Date);
+                    JSONObject TaskObject = jsonArray.getJSONObject(i);
+                    int Id = TaskObject.getInt("IdTask");
+                    String TaskName = TaskObject.getString("TaskName");
+                    String TaskDec = TaskObject.getString("TaskDec");
+                    String CreatedAt = TaskObject.getString("CreatedAt");
+                    Task listItem = new Task(Id,TaskName, TaskDec, CreatedAt);
                     listItems.add(listItem);
                 }
 
                 adapter.notifyDataSetChanged();
-//                viewDialog.hideDialog();
+                viewDialog.hideDialog();
                 Log.d("res", jsonArray.toString());
 
             } catch (JSONException e) {
                 e.printStackTrace();
                 viewDialog.hideDialog();
                 Snackbar.make(findViewById(android.R.id.content), "Couldn't get Students " + e , Snackbar.LENGTH_LONG)
-                        .setAction("Retry", v -> getStudents()).show();
+                        .setAction(" محاولة مرة اخري", v -> getTasks()).show();
             }
 
         }, error -> {
             error.printStackTrace();
-//            viewDialog.hideDialog();
+            viewDialog.hideDialog();
             Snackbar.make(findViewById(android.R.id.content), "Couldn't get Students " + error , Snackbar.LENGTH_LONG)
-                    .setAction("Retry", v -> getStudents()).show();
+                    .setAction(" محاولة مرة اخري", v -> getTasks()).show();
         });
 
         requestQueue.add(stringRequest);
@@ -134,7 +143,6 @@ public class StudentsActivity extends AppCompatActivity implements StudentAdapte
             @Override
             public boolean onQueryTextChange(String newText) {
                 adapter.getFilter().filter(newText);
-
                 return false;
             }
         });
@@ -143,8 +151,7 @@ public class StudentsActivity extends AppCompatActivity implements StudentAdapte
     }
 
     @Override
-    public void onStudentSelected(Student student) {
-        Toast.makeText(getApplicationContext(), "Selected: " + student.getName() + ", " + student.getPhone(), Toast.LENGTH_LONG).show();
+    public void onContactSelected(Contact contact) {
+        Toast.makeText(getApplicationContext(), "Selected: " + contact.getName() + ", " + contact.getPhone(), Toast.LENGTH_LONG).show();
     }
 }
-

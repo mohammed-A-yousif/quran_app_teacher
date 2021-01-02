@@ -1,34 +1,31 @@
-package com.example.quranappteacher;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+package com.example.quranappteacher.activity;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.example.quranappteacher.R;
+import com.example.quranappteacher.SharedPrefManager;
+import com.example.quranappteacher.adapter.StudentAdapter;
+import com.example.quranappteacher.URLs;
+import com.example.quranappteacher.ViewDialog;
+import com.example.quranappteacher.model.Student;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,77 +34,79 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Missions extends AppCompatActivity implements MissionsAdapter.MissionsAdapterListener {
-    private MissionsAdapter adapter;
-    int TeacherId;
+public class StudentsActivity extends AppCompatActivity implements StudentAdapter.StudentAdapterListener {
+
+    private StudentAdapter adapter;
     private JSONArray jsonArray;
-    List<Task> listItems ;
+
+    List<Student> listItems ;
+    ViewDialog viewDialog;
+    int TeacherId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.missions_activity);
-        Toolbar toolbar = findViewById(R.id.missions_toolbar);
+        setContentView(R.layout.students_activity);
+
+        Toolbar toolbar = findViewById(R.id.students_toolbar);
         setSupportActionBar(toolbar);
+        viewDialog = new ViewDialog(this);
 
-        RecyclerView recyclerView = findViewById(R.id.missions_recyclerView);
+        RecyclerView recyclerView = findViewById(R.id.students_recyclerView);
         recyclerView.setHasFixedSize(true);
-
-        TeacherId = SharedPrefManager.getInstance(this).getAdmin().getId();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         listItems = new ArrayList<>();
 
+        TeacherId = SharedPrefManager.getInstance(this).getAdmin().getId();
 
-        adapter = new MissionsAdapter(listItems, this);
+
+        adapter = new StudentAdapter(listItems, this);
         recyclerView.setAdapter(adapter);
 
-        // toolbar fancy stuff
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(R.string.toolbar_title);
 
-        getTasks();
-
-        FloatingActionButton teachFAB = findViewById(R.id.add_mission_fab);
-        teachFAB.setOnClickListener(v -> {
-            Intent i = new Intent(getApplicationContext(), AddingMission.class);
-            startActivity(i);
+        toolbar.setNavigationOnClickListener(v -> {
+            finish();
         });
+
+        getStudents();
     }
 
-    private void getTasks() {
 
-        //        viewDialog.showDialog();
+    public void getStudents(){
+        viewDialog.showDialog();
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.GetTask + TeacherId , response -> {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.GetStudents + TeacherId , response -> {
             try {
                 jsonArray = new JSONArray(response);
                 for (int i = 0; i < jsonArray.length(); i ++){
-                    JSONObject TaskObject = jsonArray.getJSONObject(i);
-                    int Id = TaskObject.getInt("IdTask");
-                    String TaskName = TaskObject.getString("TaskName");
-                    String TaskDec = TaskObject.getString("TaskDec");
-                    String CreatedAt = TaskObject.getString("CreatedAt");
-                    Task listItem = new Task(Id,TaskName, TaskDec, CreatedAt);
+                    JSONObject StudentObject = jsonArray.getJSONObject(i);
+                    int Id = StudentObject.getInt("IdStudent");
+                    String Name = StudentObject.getString("Name");
+                    String PhoneNumber = StudentObject.getString("PhoneNumber");
+                    String Date = StudentObject.getString("CreatedAt");
+                    Student listItem = new Student(Id,Name, PhoneNumber, Date);
                     listItems.add(listItem);
                 }
 
                 adapter.notifyDataSetChanged();
-//                viewDialog.hideDialog();
+                viewDialog.hideDialog();
                 Log.d("res", jsonArray.toString());
 
             } catch (JSONException e) {
                 e.printStackTrace();
-//                viewDialog.hideDialog();
+                viewDialog.hideDialog();
                 Snackbar.make(findViewById(android.R.id.content), "Couldn't get Students " + e , Snackbar.LENGTH_LONG)
-                        .setAction("Retry", v -> getTasks()).show();
+                        .setAction("Retry", v -> getStudents()).show();
             }
 
         }, error -> {
             error.printStackTrace();
-//            viewDialog.hideDialog();
+            viewDialog.hideDialog();
             Snackbar.make(findViewById(android.R.id.content), "Couldn't get Students " + error , Snackbar.LENGTH_LONG)
-                    .setAction("Retry", v -> getTasks()).show();
+                    .setAction("Retry", v -> getStudents()).show();
         });
 
         requestQueue.add(stringRequest);
@@ -136,6 +135,7 @@ public class Missions extends AppCompatActivity implements MissionsAdapter.Missi
             @Override
             public boolean onQueryTextChange(String newText) {
                 adapter.getFilter().filter(newText);
+
                 return false;
             }
         });
@@ -144,7 +144,8 @@ public class Missions extends AppCompatActivity implements MissionsAdapter.Missi
     }
 
     @Override
-    public void onContactSelected(Contact contact) {
-        Toast.makeText(getApplicationContext(), "Selected: " + contact.getName() + ", " + contact.getPhone(), Toast.LENGTH_LONG).show();
+    public void onStudentSelected(Student student) {
+        Toast.makeText(getApplicationContext(), "Selected: " + student.getName() + ", " + student.getPhone(), Toast.LENGTH_LONG).show();
     }
 }
+

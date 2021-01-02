@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
+import com.example.quranappteacher.activity.LoginActivity;
+
 public class SharedPrefManager {
 
     private static final String SHARED_PREF_NAME = "Teacher";
@@ -58,6 +60,6 @@ public class SharedPrefManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.apply();
-        mCtx.startActivity(new Intent(mCtx, Login.class));
+        mCtx.startActivity(new Intent(mCtx, LoginActivity.class));
     }
 }

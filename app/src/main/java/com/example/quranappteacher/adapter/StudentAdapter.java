@@ -1,4 +1,4 @@
-package com.example.quranappteacher;
+package com.example.quranappteacher.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.quranappteacher.R;
+import com.example.quranappteacher.model.Student;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,16 +29,17 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_row_teach, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_student, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Student listItem = listItems.get(position);
-        holder.textViewName.setText(listItem.getName());
-        holder.textViewPhone.setText(listItem.getPhone());
-//        holder.textViewDate.setText(listItem.getDate());
+        holder.textStudentName.setText(listItem.getName());
+        holder.textStudentAddress.setText(listItem.getName());
+        holder.textStudentPhoneNumber.setText(listItem.getPhone());
+        holder.timestamp.setText(listItem.getDate());
     }
 
     @Override
@@ -44,16 +48,18 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView textViewName;
-        public TextView textViewPhone;
-        public TextView textViewDate;
+        public TextView textStudentName;
+        public TextView textStudentAddress;
+        public TextView textStudentPhoneNumber;
+        public TextView timestamp;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            textViewName = itemView.findViewById(R.id.teacher_name_textView);
-            textViewPhone = itemView.findViewById(R.id.phone_num_textView);
-//            textViewDate = itemView.findViewById(R.id.date_textView);
+            textStudentName = itemView.findViewById(R.id.textStudentName);
+            textStudentAddress = itemView.findViewById(R.id.textteacherName);
+            textStudentPhoneNumber = itemView.findViewById(R.id.textTaskDetails);
+            timestamp = itemView.findViewById(R.id.timestamp);
         }
     }
 

@@ -1,4 +1,4 @@
-package com.example.quranappteacher;
+package com.example.quranappteacher.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,15 +11,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.quranappteacher.Contact;
+import com.example.quranappteacher.R;
+import com.example.quranappteacher.model.Task;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class MissionsAdapter extends RecyclerView.Adapter<MissionsAdapter.ViewHolder> implements Filterable {
+public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> implements Filterable {
     private List<Task> listItems;
     private List<Task> listItemsFiltered;
 
 
-    public MissionsAdapter(List<Task> listItems, Context context) {
+    public TaskAdapter(List<Task> listItems, Context context) {
         this.listItems = listItems;
         listItemsFiltered = new ArrayList<>(listItems);
 
@@ -28,15 +32,16 @@ public class MissionsAdapter extends RecyclerView.Adapter<MissionsAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_mission, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_task, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Task listItem = listItems.get(position);
-        holder.textViewName.setText(listItem.getTaskName());
-        holder.textViewPhone.setText(listItem.getTaskDec());
+        holder.textStudentName.setText(listItem.getTaskName());
+        holder.textteacherName.setText(listItem.getTaskDec());
+        holder.textteacherName.setText(listItem.getTaskDec());
         holder.textViewDate.setText(listItem.getCreatedAt());
     }
 
@@ -51,16 +56,17 @@ public class MissionsAdapter extends RecyclerView.Adapter<MissionsAdapter.ViewHo
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView textViewName;
-        public TextView textViewPhone;
+        public TextView textStudentName;
+        public TextView textteacherName;
+        public TextView textTaskDetails;
         public TextView textViewDate;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            textViewName = itemView.findViewById(R.id.mission_row_name_textView);
-            textViewPhone = itemView.findViewById(R.id.mission_row_phone_textView);
-            textViewDate = itemView.findViewById(R.id._mission_row_date_textView);
+            textStudentName = itemView.findViewById(R.id.textStudentName);
+            textteacherName = itemView.findViewById(R.id.textteacherName);
+            textTaskDetails = itemView.findViewById(R.id.textTaskDetails);
+            textViewDate = itemView.findViewById(R.id.timestamp);
         }
     }
     private Filter contactFilter = new Filter() {
