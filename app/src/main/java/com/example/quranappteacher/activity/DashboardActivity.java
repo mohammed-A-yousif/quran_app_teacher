@@ -1,4 +1,4 @@
-package com.example.quranappteacher;
+package com.example.quranappteacher.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,11 +8,13 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import com.example.quranappteacher.R;
+import com.example.quranappteacher.SharedPrefManager;
 import com.example.quranappteacher.activity.ReviewActivity;
 import com.example.quranappteacher.activity.StudentsActivity;
 import com.example.quranappteacher.activity.TaskActivity;
 
-public class Control extends AppCompatActivity {
+public class DashboardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,7 +27,7 @@ public class Control extends AppCompatActivity {
         TextView UserName = findViewById(R.id.text_user_name);
 
         String admin = SharedPrefManager.getInstance(this).getAdmin().getName();
-        UserName.setText("مرحبا بك ! " + admin);
+        UserName.setText("مرحبا بك " + admin + " ! ");
 
         students_cardView.setOnClickListener(v -> {
             Intent i = new Intent(getApplicationContext(), StudentsActivity.class);
@@ -41,5 +43,11 @@ public class Control extends AppCompatActivity {
             Intent i = new Intent(getApplicationContext(), ReviewActivity.class);
             startActivity(i);
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

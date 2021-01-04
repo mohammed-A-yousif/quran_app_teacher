@@ -70,15 +70,15 @@ public class StudentsReviews extends AppCompatActivity {
         DatePicekd = intent.getStringExtra("DatePicekd");
 
         if (InternetStatus.getInstance(this).isOnline()) {
-            GetRview(DatePicekd);
+            GetReview(DatePicekd);
         } else {
             Snackbar.make(findViewById(android.R.id.content), " غير متصل بالانترت حاليا ، الرجاء مراجعةالأنترنت " , Snackbar.LENGTH_LONG)
-                    .setAction("محاولة مرة اخري", v ->   GetRview(DatePicekd)).show();
+                    .setAction("محاولة مرة اخري", v ->   GetReview(DatePicekd)).show();
         }
 
     }
 
-    private void GetRview(String datePicked) {
+    private void GetReview(String datePicked) {
         viewDialog.showDialog();
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.GetReviews + IdTeacher + "/?ReviewDate=" + datePicked , response -> {
@@ -104,14 +104,14 @@ public class StudentsReviews extends AppCompatActivity {
                 e.printStackTrace();
                 viewDialog.hideDialog();
                 Snackbar.make(findViewById(android.R.id.content), "تعذر عرض المهات " + e , Snackbar.LENGTH_LONG)
-                        .setAction("محاولة مرة اخري", v -> GetRview(DatePicekd)).show();
+                        .setAction("محاولة مرة اخري", v -> GetReview(DatePicekd)).show();
             }
 
         }, error -> {
             error.printStackTrace();
             viewDialog.hideDialog();
             Snackbar.make(findViewById(android.R.id.content), " تعذر عرض المهات " + error , Snackbar.LENGTH_LONG)
-                    .setAction("محاولة مرة اخري", v -> GetRview(DatePicekd)).show();
+                    .setAction("محاولة مرة اخري", v -> GetReview(DatePicekd)).show();
         });
 
         requestQueue.add(stringRequest);

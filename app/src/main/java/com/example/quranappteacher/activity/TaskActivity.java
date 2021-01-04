@@ -82,6 +82,7 @@ public class TaskActivity extends AppCompatActivity  {
         teachFAB.setOnClickListener(v -> {
             Intent i = new Intent(getApplicationContext(), AddingTask.class);
             startActivity(i);
+            finish();
         });
     }
 

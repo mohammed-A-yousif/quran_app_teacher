@@ -2,7 +2,6 @@ package com.example.quranappteacher.activity;
 
 import android.util.Log;
 import android.util.Patterns;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.content.Intent;
@@ -15,7 +14,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.quranappteacher.Admin;
-import com.example.quranappteacher.Control;
 import com.example.quranappteacher.R;
 import com.example.quranappteacher.SharedPrefManager;
 import com.example.quranappteacher.URLs;
@@ -27,8 +25,6 @@ import org.json.JSONObject;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.example.quranappteacher.URLs.BaseUrl;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -46,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (SharedPrefManager.getInstance(this).isLoggedIn()) {
             finish();
-            startActivity(new Intent(this, Control.class));
+            startActivity(new Intent(this, DashboardActivity.class));
             return;
         }
 
@@ -76,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
                 URLs.Login + "?PhoneNumber=" + phoneNumber + "&Password=" + password, null,
                 (JSONObject response) -> {
                     try {
-                        Log.d("res", response.toString());
+//                        Log.d("res", response.toString());
                         Admin admin = new Admin(response.getInt("IdTeacher"),
                                 response.getInt("UserType"), response.getString("Name"),
                                 response.getString("PhoneNumber"));
@@ -109,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
         viewDialog.hideDialog();
         Snackbar.make(findViewById(android.R.id.content), "تم تسجيل الدخول بنجاح", Snackbar.LENGTH_LONG)
                 .show();
-        startActivity(new Intent(this, Control.class));
+        startActivity(new Intent(this, DashboardActivity.class));
         finish();
     }
 
