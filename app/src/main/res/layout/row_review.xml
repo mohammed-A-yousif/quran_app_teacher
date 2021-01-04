@@ -19,7 +19,6 @@
     app:layout_constraintTop_toTopOf="parent">
 
     <RelativeLayout
-        android:id="@+id/task_layout"
         android:layout_width="match_parent"
         android:layout_height="146dp"
         android:clickable="true"
@@ -46,7 +45,7 @@
             android:paddingEnd="16sp">
 
             <TextView
-                android:id="@+id/textStudentName"
+                android:id="@+id/textReviewStudent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -60,7 +59,7 @@
 
 
 <!--            <TextView-->
-<!--                android:id="@+id/textteacherName"-->
+<!--                android:id="@+id/textReviewTeacher"-->
 <!--                android:layout_width="match_parent"-->
 <!--                android:layout_height="wrap_content"-->
 <!--                android:ellipsize="end"-->
@@ -71,7 +70,7 @@
 
 
             <TextView
-                android:id="@+id/textTaskName"
+                android:id="@+id/textReviewDec"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"

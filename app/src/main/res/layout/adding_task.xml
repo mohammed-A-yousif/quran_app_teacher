@@ -6,6 +6,23 @@
     android:layout_height="fill_parent"
     android:background="@color/bg">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/task_appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/task_toolbar"
+            android:layout_width="match_parent"
+            android:background="?attr/colorPrimary"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            android:layout_height="?attr/actionBarSize" />
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout4"
@@ -20,7 +37,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/task_appBarLayout">
 
         <EditText
             android:id="@+id/adding_mission_name_editText"

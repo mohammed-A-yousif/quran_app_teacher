@@ -11,7 +11,7 @@ public class URLs {
     public static String GetStudents = BaseUrl + "students/";
     public static String AddTask = BaseUrl + "add_task/";
     public static String GetTask = BaseUrl + "tasks_teacher/";
-
+    public static String GetReviews = BaseUrl + "review_teacher_date/";
     public static String AddStudent = BaseUrl + "student_register/";
 
     public static String getBaseUrl() {

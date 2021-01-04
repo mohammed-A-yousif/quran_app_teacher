@@ -3,13 +3,17 @@ package com.example.quranappteacher.model;
 public class Student {
     int Id;
     String name;
+    String TeacherName;
+    String Address;
     String phone;
     String date;
 
 
-    public Student(int Id, String name, String phone, String date) {
+    public Student(int Id, String name, String TeacherName, String Address, String phone, String date) {
         this.Id = Id;
         this.name = name;
+        this.TeacherName = TeacherName;
+        this.Address = Address;
         this.phone = phone;
         this.date = date;
     }
@@ -17,14 +21,6 @@ public class Student {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setId(int id) {
-        Id = id;
-    }
-
-    public int getId() {
-        return Id;
     }
 
     public void setPhone(String phone) {
@@ -35,8 +31,32 @@ public class Student {
         this.date = date;
     }
 
+    public void setTeacherName(String teacherName) {
+        TeacherName = teacherName;
+    }
+
+    public void setAddress(String address) {
+        Address = address;
+    }
+
+    public void setId(int id) {
+        Id = id;
+    }
+
+    public int getId() {
+        return Id;
+    }
+
+    public String getAddress() {
+        return Address;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public String getTeacherName() {
+        return TeacherName;
     }
 
     public String getPhone() {

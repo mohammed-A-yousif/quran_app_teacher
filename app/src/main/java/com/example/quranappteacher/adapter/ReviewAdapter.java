@@ -12,16 +12,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quranappteacher.R;
-import com.example.quranappteacher.model.Student;
+import com.example.quranappteacher.model.Review;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHolder> implements Filterable {
-    private List<Student> listItems;
-    private List<Student> listItemsFiltered;
+public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder> implements Filterable {
+    private List<Review> listItems;
+    private List<Review> listItemsFiltered;
 
-    public StudentAdapter(List<Student> listItems, Context context) {
+    public ReviewAdapter(List<Review> listItems, Context context) {
         this.listItems = listItems;
         listItemsFiltered = new ArrayList<>(listItems);
     }
@@ -29,18 +29,17 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_student, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_review, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Student listItem = listItems.get(position);
-        holder.textStudentName.setText("اسم الدارس : " + listItem.getName());
-//        holder.textTeacherName.setText("اسم الشيخ : " + listItem.getTeacherName());
-        holder.textStudentAddress.setText("عنوان الدارس : " + listItem.getAddress());
-        holder.textStudentPhoneNumber.setText("هاتف الدارس : " + listItem.getPhone());
-        holder.timestamp.setText(listItem.getDate());
+        Review listItem = listItems.get(position);
+        holder.textReviewStudent.setText("اسم الدارس : " + listItem.getStudnet());
+//        holder.textReviewTeacher.setText("اسم الشيخ : " + listItem.getTeacher());
+        holder.textReviewDec.setText("تفاصيل المراجعة : " + listItem.getReviewDec());
+        holder.timestamp.setText(listItem.getCreatedAt());
     }
 
     @Override
@@ -49,19 +48,17 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView textStudentName;
-//        public TextView textTeacherName;
-        public TextView textStudentAddress;
-        public TextView textStudentPhoneNumber;
+        public TextView textReviewStudent;
+//        public TextView textReviewTeacher;
+        public TextView textReviewDec;
         public TextView timestamp;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            textStudentName = itemView.findViewById(R.id.textStudentName);
-//            textTeacherName = itemView.findViewById(R.id.textteacherName);
-            textStudentAddress = itemView.findViewById(R.id.textStudentAddress);
-            textStudentPhoneNumber = itemView.findViewById(R.id.textStudentPhone);
+            textReviewStudent = itemView.findViewById(R.id.textReviewStudent);
+//            textReviewTeacher = itemView.findViewById(R.id.textReviewTeacher);
+            textReviewDec = itemView.findViewById(R.id.textReviewDec);
             timestamp = itemView.findViewById(R.id.timestamp);
 
         }
@@ -75,14 +72,14 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
     private Filter contactFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            List<Student> filteredList =new ArrayList<>();
+            List<Review> filteredList =new ArrayList<>();
 
             if (constraint==null|| constraint.length()==0){
                 filteredList.addAll(listItemsFiltered);
             }else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
-                for (Student item : listItemsFiltered){
-                    if (item.getName().toLowerCase().contains(filterPattern) || item.getPhone().contains(filterPattern)){
+                for (Review item : listItemsFiltered){
+                    if (item.getReviewDec().toLowerCase().contains(filterPattern) || item.getNumberOfParts().contains(filterPattern)){
                         filteredList.add(item);
                     }
                 }
@@ -100,7 +97,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
 
         }
     };
-    public interface StudentAdapterListener {
-        void onStudentSelected(Student student);
+    public interface ReviewAdapterListener {
+        void onReviewSelected(Review review);
     }
 }

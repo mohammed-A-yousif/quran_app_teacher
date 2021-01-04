@@ -1,4 +1,4 @@
-package com.example.quranappteacher;
+package com.example.quranappteacher.activity;
 
 
 import android.content.Intent;
@@ -14,12 +14,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.quranappteacher.R;
+import com.example.quranappteacher.SharedPrefManager;
+import com.example.quranappteacher.URLs;
+import com.example.quranappteacher.ViewDialog;
 import com.example.quranappteacher.activity.TaskActivity;
 import com.example.quranappteacher.model.Student;
 import com.google.android.material.snackbar.Snackbar;
@@ -49,11 +54,22 @@ public class AddingTask extends AppCompatActivity implements AdapterView.OnItemS
         super.onCreate(savedInstanceState);
         setContentView(R.layout.adding_task);
 
+        Toolbar toolbar = findViewById(R.id.task_toolbar);
+        setSupportActionBar(toolbar);
+
         Button addMissionButton = findViewById(R.id.add_mission_button);
         addMissionStudentSpinner = findViewById(R.id.add_mission_student_spinner);
 
         taskNameText = findViewById(R.id.adding_mission_name_editText);
         taskDecText = findViewById(R.id.mission_editText_dec);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        getSupportActionBar().setTitle(R.string.toolbar_title);
+
+
+        toolbar.setNavigationOnClickListener(v -> {
+            finish();
+        });
 
 
         viewDialog = new ViewDialog(this);
@@ -64,14 +80,13 @@ public class AddingTask extends AppCompatActivity implements AdapterView.OnItemS
         addMissionStudentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                ((TextView) view).setTextColor(Color.BLACK);
+                ((TextView) view).setTextColor(Color.WHITE);
                 StudentId = listItems.get(position).getId();
-
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                Snackbar.make(findViewById(android.R.id.content), "Please Choose Teacher !!! ", Snackbar.LENGTH_LONG)
+                Snackbar.make(findViewById(android.R.id.content), " الرجاء اختيار الدارس ", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -90,6 +105,9 @@ public class AddingTask extends AppCompatActivity implements AdapterView.OnItemS
     }
 
     private void addTask(String taskName, String taskDec) {
+        if (!validate()) {
+            return;
+        }
         viewDialog.showDialog();
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,  URLs.AddTask + "?IdTeacher=" + TeacherId + "&IdStudent=" + StudentId  + "&TaskName=" + taskName  + "&TaskDec=" + taskDec + "&TaskStatus=" + 0 + "&Enabled=" + 1, null,
@@ -124,9 +142,11 @@ public class AddingTask extends AppCompatActivity implements AdapterView.OnItemS
                     JSONObject StudentObject = jsonArray.getJSONObject(i);
                     int Id = StudentObject.getInt("IdStudent");
                     String Name = StudentObject.getString("Name");
+                    String TeacherName = StudentObject.getString("Teacher");
+                    String Address = StudentObject.getString("Address");
                     String PhoneNumber = StudentObject.getString("PhoneNumber");
                     String Date = StudentObject.getString("CreatedAt");
-                    Student listItem = new Student(Id ,Name, PhoneNumber, Date);
+                    Student listItem = new Student(Id, Name, TeacherName, Address, PhoneNumber, Date);
                     listItems.add(listItem);
                     StudentArray.add(listItem.getName());
                 }
@@ -137,14 +157,14 @@ public class AddingTask extends AppCompatActivity implements AdapterView.OnItemS
             } catch (JSONException e) {
                 e.printStackTrace();
                 viewDialog.hideDialog();
-                Snackbar.make(findViewById(android.R.id.content), "Couldn't get Teacher " + e , Snackbar.LENGTH_LONG)
+                Snackbar.make(findViewById(android.R.id.content), " فشل في عرض الدارسين " + e , Snackbar.LENGTH_LONG)
                         .setAction(" محاولة مرة اخري", v -> GetStudent()).show();
             }
 
         }, error -> {
             error.printStackTrace();
             viewDialog.hideDialog();
-            Snackbar.make(findViewById(android.R.id.content), "Couldn't get Teacher " + error , Snackbar.LENGTH_LONG)
+            Snackbar.make(findViewById(android.R.id.content), " فشل في عرض الدارسين " + error , Snackbar.LENGTH_LONG)
                     .setAction(" محاولة مرة اخري", v -> GetStudent()).show();
         });
 
@@ -154,7 +174,7 @@ public class AddingTask extends AppCompatActivity implements AdapterView.OnItemS
 
     private void onInsertFailed() {
         viewDialog.hideDialog();
-        Snackbar.make(findViewById(android.R.id.content), "Sign in Failed", Snackbar.LENGTH_LONG)
+        Snackbar.make(findViewById(android.R.id.content), "فشل اضافة مهمة ", Snackbar.LENGTH_LONG)
                 .setAction(" محاولة مرة اخري", v -> {
                     addTask(taskNameText.getText().toString() , taskDecText.getText().toString());
                 }).show();
@@ -162,7 +182,7 @@ public class AddingTask extends AppCompatActivity implements AdapterView.OnItemS
 
     private void onInsertSuccess() {
         viewDialog.hideDialog();
-        Snackbar.make(findViewById(android.R.id.content), "Sign in Successfully", Snackbar.LENGTH_LONG)
+        Snackbar.make(findViewById(android.R.id.content), "تمت اضافة المهمة بنجاح ", Snackbar.LENGTH_LONG)
                 .show();
         startActivity(new Intent(this, TaskActivity.class));
         finish();
@@ -176,5 +196,26 @@ public class AddingTask extends AppCompatActivity implements AdapterView.OnItemS
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    private boolean validate() {
+        boolean valid = true;
+
+        if (taskName.length() == 0 ) {
+            taskNameText.setError("الرجاء ادخال اسم المهمة ");
+            valid = false;
+        } else {
+            taskNameText.setError(null);
+        }
+
+        if (taskDec.length()  == 0) {
+            taskDecText.setError("الرجاء ادخال تفاصيل المهمة ");
+            valid = false;
+        } else {
+            taskDecText.setError(null);
+        }
+
+
+        return valid;
     }
 }

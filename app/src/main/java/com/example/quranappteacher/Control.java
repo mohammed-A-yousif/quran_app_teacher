@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import com.example.quranappteacher.activity.ReviewActivity;
 import com.example.quranappteacher.activity.StudentsActivity;
 import com.example.quranappteacher.activity.TaskActivity;
 
@@ -37,7 +38,7 @@ public class Control extends AppCompatActivity {
         });
 
         review_cardView.setOnClickListener(v -> {
-            Intent i = new Intent(getApplicationContext(), Review.class);
+            Intent i = new Intent(getApplicationContext(), ReviewActivity.class);
             startActivity(i);
         });
     }

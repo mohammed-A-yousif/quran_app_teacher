@@ -19,6 +19,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.quranappteacher.InternetStatus;
 import com.example.quranappteacher.R;
 import com.example.quranappteacher.SharedPrefManager;
 import com.example.quranappteacher.adapter.StudentAdapter;
@@ -71,7 +72,13 @@ public class StudentsActivity extends AppCompatActivity implements StudentAdapte
             finish();
         });
 
-        getStudents();
+        if (InternetStatus.getInstance(this).isOnline()) {
+            getStudents();
+        } else {
+            Snackbar.make(findViewById(android.R.id.content), " غير متصل بالانترت حاليا ، الرجاء مراجعةالأنترنت " , Snackbar.LENGTH_LONG)
+                    .setAction("محاولة مرة اخري", v -> getStudents()).show();
+        }
+
     }
 
 
@@ -85,28 +92,30 @@ public class StudentsActivity extends AppCompatActivity implements StudentAdapte
                     JSONObject StudentObject = jsonArray.getJSONObject(i);
                     int Id = StudentObject.getInt("IdStudent");
                     String Name = StudentObject.getString("Name");
+                    String TeacherName = StudentObject.getString("Teacher");
+                    String Address = StudentObject.getString("Address");
                     String PhoneNumber = StudentObject.getString("PhoneNumber");
                     String Date = StudentObject.getString("CreatedAt");
-                    Student listItem = new Student(Id,Name, PhoneNumber, Date);
+                    Student listItem = new Student(Id, Name, TeacherName, Address, PhoneNumber, Date);
                     listItems.add(listItem);
                 }
 
                 adapter.notifyDataSetChanged();
                 viewDialog.hideDialog();
-                Log.d("res", jsonArray.toString());
+//                Log.d("res", jsonArray.toString());
 
             } catch (JSONException e) {
                 e.printStackTrace();
                 viewDialog.hideDialog();
-                Snackbar.make(findViewById(android.R.id.content), "Couldn't get Students " + e , Snackbar.LENGTH_LONG)
-                        .setAction("Retry", v -> getStudents()).show();
+                Snackbar.make(findViewById(android.R.id.content), "تعذر عرض الدارسين " + e , Snackbar.LENGTH_LONG)
+                        .setAction("محاولة مرة اخري", v -> getStudents()).show();
             }
 
         }, error -> {
             error.printStackTrace();
             viewDialog.hideDialog();
-            Snackbar.make(findViewById(android.R.id.content), "Couldn't get Students " + error , Snackbar.LENGTH_LONG)
-                    .setAction("Retry", v -> getStudents()).show();
+            Snackbar.make(findViewById(android.R.id.content), "تعذر عرض الدارسين " + error , Snackbar.LENGTH_LONG)
+                    .setAction("محاولة مرة اخري", v -> getStudents()).show();
         });
 
         requestQueue.add(stringRequest);

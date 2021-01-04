@@ -10,17 +10,14 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.quranappteacher.AddingTask;
-import com.example.quranappteacher.Contact;
+import com.example.quranappteacher.InternetStatus;
 import com.example.quranappteacher.adapter.TaskAdapter;
 import com.example.quranappteacher.R;
 import com.example.quranappteacher.SharedPrefManager;
@@ -37,7 +34,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaskActivity extends AppCompatActivity implements TaskAdapter.MissionsAdapterListener {
+public class TaskActivity extends AppCompatActivity  {
     private TaskAdapter adapter;
     int TeacherId;
     private JSONArray jsonArray;
@@ -73,8 +70,13 @@ public class TaskActivity extends AppCompatActivity implements TaskAdapter.Missi
             finish();
         });
 
+        if (InternetStatus.getInstance(this).isOnline()) {
+            getTasks();
+        } else {
+            Snackbar.make(findViewById(android.R.id.content), " غير متصل بالانترت حاليا ، الرجاء مراجعةالأنترنت " , Snackbar.LENGTH_LONG)
+                    .setAction("محاولة مرة اخري", v -> getTasks()).show();
+        }
 
-        getTasks();
 
         FloatingActionButton teachFAB = findViewById(R.id.add_mission_fab);
         teachFAB.setOnClickListener(v -> {
@@ -94,26 +96,29 @@ public class TaskActivity extends AppCompatActivity implements TaskAdapter.Missi
                     int Id = TaskObject.getInt("IdTask");
                     String TaskName = TaskObject.getString("TaskName");
                     String TaskDec = TaskObject.getString("TaskDec");
+                    String Teacher = TaskObject.getString("Teacher");
+                    String Student = TaskObject.getString("Student");
+                    int TaskStatus = TaskObject.getInt("TaskStatus");
                     String CreatedAt = TaskObject.getString("CreatedAt");
-                    Task listItem = new Task(Id,TaskName, TaskDec, CreatedAt);
+                    Task listItem = new Task(Id,TaskName, TaskDec, Teacher, Student,TaskStatus, CreatedAt);
                     listItems.add(listItem);
                 }
 
                 adapter.notifyDataSetChanged();
                 viewDialog.hideDialog();
-                Log.d("res", jsonArray.toString());
+//                Log.d("res", jsonArray.toString());
 
             } catch (JSONException e) {
                 e.printStackTrace();
                 viewDialog.hideDialog();
-                Snackbar.make(findViewById(android.R.id.content), "Couldn't get Students " + e , Snackbar.LENGTH_LONG)
+                Snackbar.make(findViewById(android.R.id.content), "  فشل عرض المهات " + e , Snackbar.LENGTH_LONG)
                         .setAction(" محاولة مرة اخري", v -> getTasks()).show();
             }
 
         }, error -> {
             error.printStackTrace();
             viewDialog.hideDialog();
-            Snackbar.make(findViewById(android.R.id.content), "Couldn't get Students " + error , Snackbar.LENGTH_LONG)
+            Snackbar.make(findViewById(android.R.id.content), " فشل عرض المهات  " + error , Snackbar.LENGTH_LONG)
                     .setAction(" محاولة مرة اخري", v -> getTasks()).show();
         });
 
@@ -150,8 +155,4 @@ public class TaskActivity extends AppCompatActivity implements TaskAdapter.Missi
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    public void onContactSelected(Contact contact) {
-        Toast.makeText(getApplicationContext(), "Selected: " + contact.getName() + ", " + contact.getPhone(), Toast.LENGTH_LONG).show();
-    }
 }
