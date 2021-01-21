@@ -43,7 +43,12 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <!-- students activity -->
+        <!-- view task activity -->
+        <activity
+            android:name=".activity.ViewTask"
+            android:label="المهمة"
+            android:theme="@style/AppTheme.NoActionBar" />
+
 
         <!-- addingMission activity -->
         <activity

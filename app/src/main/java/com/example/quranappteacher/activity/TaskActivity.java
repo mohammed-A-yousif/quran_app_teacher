@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,17 +35,25 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaskActivity extends AppCompatActivity  {
+public class TaskActivity extends AppCompatActivity {
     private TaskAdapter adapter;
+    private RecyclerView.LayoutManager mLayoutManager;
     int TeacherId;
     private JSONArray jsonArray;
-    List<Task> listItems ;
+    private ArrayList<Task> listItems;
     ViewDialog viewDialog;
+    SharedPreferences sp;
+    Task item;
+    String nameStr, taskStr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.task_activity);
+
+//      @@@@@@
+        sp = getSharedPreferences("StudentTaskPrefs", Context.MODE_PRIVATE);
+//      @@@@@@
 
         //      Toolbar
         Toolbar toolbar = findViewById(R.id.task_toolbar);
@@ -56,26 +65,50 @@ public class TaskActivity extends AppCompatActivity  {
             finish();
         });
 
+        //      ExampleList
+        listItems = new ArrayList<>();
+
+//        @@@@@@@@@@@@
+        //      buildRecyclerView
         RecyclerView recyclerView = findViewById(R.id.task_recyclerView);
         recyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        adapter = new TaskAdapter(listItems);
+
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(new TaskAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+//              ################
+                item = listItems.get(position);
+                nameStr = item.getStudent();
+                taskStr = item.getTaskName();
+
+
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("name", nameStr);
+                editor.putString("task", taskStr);
+
+                editor.commit();
+
+                Intent i = new Intent(getApplicationContext(), ViewTask.class);
+                startActivity(i);
+                finish();
+//              ################
+            }
+        });
 
         viewDialog = new ViewDialog(this);
         TeacherId = SharedPrefManager.getInstance(this).getAdmin().getId();
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        listItems = new ArrayList<>();
-
-
-        adapter = new TaskAdapter(listItems, this);
-        recyclerView.setAdapter(adapter);
-
         if (InternetStatus.getInstance(this).isOnline()) {
             getTasks();
         } else {
-            Snackbar.make(findViewById(android.R.id.content), " غير متصل بالانترت حاليا ، الرجاء مراجعةالأنترنت " , Snackbar.LENGTH_LONG)
+            Snackbar.make(findViewById(android.R.id.content), " غير متصل بالانترت حاليا ، الرجاء مراجعةالأنترنت ", Snackbar.LENGTH_LONG)
                     .setAction("محاولة مرة اخري", v -> getTasks()).show();
         }
-
 
         FloatingActionButton teachFAB = findViewById(R.id.add_mission_fab);
         teachFAB.setOnClickListener(v -> {
@@ -88,10 +121,10 @@ public class TaskActivity extends AppCompatActivity  {
     private void getTasks() {
         viewDialog.showDialog();
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.GetTask + TeacherId , response -> {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.GetTask + TeacherId, response -> {
             try {
                 jsonArray = new JSONArray(response);
-                for (int i = 0; i < jsonArray.length(); i ++){
+                for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject TaskObject = jsonArray.getJSONObject(i);
                     int Id = TaskObject.getInt("IdTask");
                     String TaskName = TaskObject.getString("TaskName");
@@ -100,7 +133,7 @@ public class TaskActivity extends AppCompatActivity  {
                     String Student = TaskObject.getString("Student");
                     int TaskStatus = TaskObject.getInt("TaskStatus");
                     String CreatedAt = TaskObject.getString("CreatedAt");
-                    Task listItem = new Task(Id,TaskName, TaskDec, Teacher, Student,TaskStatus, CreatedAt);
+                    Task listItem = new Task(Id, TaskName, TaskDec, Teacher, Student, TaskStatus, CreatedAt);
                     listItems.add(listItem);
                 }
 
@@ -111,14 +144,14 @@ public class TaskActivity extends AppCompatActivity  {
             } catch (JSONException e) {
                 e.printStackTrace();
                 viewDialog.hideDialog();
-                Snackbar.make(findViewById(android.R.id.content), "  فشل عرض المهات " + e , Snackbar.LENGTH_LONG)
+                Snackbar.make(findViewById(android.R.id.content), "  فشل عرض المهات " + e, Snackbar.LENGTH_LONG)
                         .setAction(" محاولة مرة اخري", v -> getTasks()).show();
             }
 
         }, error -> {
             error.printStackTrace();
             viewDialog.hideDialog();
-            Snackbar.make(findViewById(android.R.id.content), " فشل عرض المهات  " + error , Snackbar.LENGTH_LONG)
+            Snackbar.make(findViewById(android.R.id.content), " فشل عرض المهات  " + error, Snackbar.LENGTH_LONG)
                     .setAction(" محاولة مرة اخري", v -> getTasks()).show();
         });
 
