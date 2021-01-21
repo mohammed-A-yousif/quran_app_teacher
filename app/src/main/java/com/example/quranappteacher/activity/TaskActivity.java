@@ -46,8 +46,15 @@ public class TaskActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.task_activity);
 
+        //      Toolbar
         Toolbar toolbar = findViewById(R.id.task_toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(R.string.toolbar_title);
+
+        toolbar.setNavigationOnClickListener(v -> {
+            finish();
+        });
 
         RecyclerView recyclerView = findViewById(R.id.task_recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -61,14 +68,6 @@ public class TaskActivity extends AppCompatActivity  {
 
         adapter = new TaskAdapter(listItems, this);
         recyclerView.setAdapter(adapter);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(R.string.toolbar_title);
-
-
-        toolbar.setNavigationOnClickListener(v -> {
-            finish();
-        });
 
         if (InternetStatus.getInstance(this).isOnline()) {
             getTasks();
@@ -148,12 +147,23 @@ public class TaskActivity extends AppCompatActivity  {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.getFilter().filter(newText);
+//                adapter.getFilter().filter(newText);
+                filter(newText);
                 return false;
             }
         });
 
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private void filter(String text) {
+        ArrayList<Task> filteredList = new ArrayList<>();
+        for (Task item : listItems) {
+            if (item.getStudent().toLowerCase().contains(text.toLowerCase())) {
+                filteredList.add(item);
+            }
+        }
+        adapter.filterList(filteredList);
     }
 
 }
