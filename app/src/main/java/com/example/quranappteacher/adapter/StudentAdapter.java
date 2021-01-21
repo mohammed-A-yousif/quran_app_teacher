@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quranappteacher.R;
 import com.example.quranappteacher.model.Student;
+import com.example.quranappteacher.model.Task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +101,11 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
 
         }
     };
-    public interface StudentAdapterListener {
-        void onStudentSelected(Student student);
+
+    public void filterList(ArrayList<Student> filteredList) {
+        listItems = filteredList;
+        notifyDataSetChanged();
+
     }
+
 }

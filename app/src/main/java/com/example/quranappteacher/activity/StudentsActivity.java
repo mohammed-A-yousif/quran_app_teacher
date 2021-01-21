@@ -26,6 +26,7 @@ import com.example.quranappteacher.adapter.StudentAdapter;
 import com.example.quranappteacher.URLs;
 import com.example.quranappteacher.ViewDialog;
 import com.example.quranappteacher.model.Student;
+import com.example.quranappteacher.model.Task;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
@@ -35,7 +36,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StudentsActivity extends AppCompatActivity implements StudentAdapter.StudentAdapterListener {
+public class StudentsActivity extends AppCompatActivity {
 
     private StudentAdapter adapter;
     private JSONArray jsonArray;
@@ -122,6 +123,7 @@ public class StudentsActivity extends AppCompatActivity implements StudentAdapte
 
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -143,8 +145,8 @@ public class StudentsActivity extends AppCompatActivity implements StudentAdapte
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.getFilter().filter(newText);
-
+//                adapter.getFilter().filter(newText);
+                filter(newText);
                 return false;
             }
         });
@@ -152,9 +154,14 @@ public class StudentsActivity extends AppCompatActivity implements StudentAdapte
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    public void onStudentSelected(Student student) {
-        Toast.makeText(getApplicationContext(), "Selected: " + student.getName() + ", " + student.getPhone(), Toast.LENGTH_LONG).show();
+    private void filter(String text) {
+        ArrayList<Student> filteredList = new ArrayList<>();
+        for (Student item : listItems) {
+            if (item.getName().toLowerCase().contains(text.toLowerCase())) {
+                filteredList.add(item);
+            }
+        }
+        adapter.filterList(filteredList);
     }
 }
 
