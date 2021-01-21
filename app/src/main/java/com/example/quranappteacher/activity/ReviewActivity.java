@@ -7,6 +7,7 @@ import android.widget.CalendarView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 
 import com.example.quranappteacher.R;
@@ -23,6 +24,15 @@ public class ReviewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.review_activity);
+
+        //      Toolbar
+        Toolbar toolbar = findViewById(R.id.review_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setNavigationOnClickListener(v -> {
+            finish();
+        });
 
         viewDialog = new ViewDialog(this);
         CardView cardView = findViewById(R.id.review_cardView);
